@@ -757,10 +757,10 @@ This is the memo you have to format:
 @flow(name="Memo Generation Flow", log_prints=True)
 def memo_generation(
     company_name: str = "Checkfirst",
-    company_context: str = None,
-    deck_extract: str = None,
-    research_data: str = None,
-    benchmark_data: str = None,
+    company_context: Optional[str] = None,
+    deck_extract: Optional[str] = None,
+    research_data: Optional[str] = None,
+    benchmark_data: Optional[str] = None,
 ):
     """
     Main flow that orchestrates the 3-step text generation process.
