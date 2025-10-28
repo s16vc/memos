@@ -593,7 +593,7 @@ def generate_text(
     """
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
-        api_key="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",
+        api_key="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",
     )
 
     messages = []
