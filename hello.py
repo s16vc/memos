@@ -755,25 +755,46 @@ This is the memo you have to format:
 
 
 @flow(name="Memo Generation Flow", log_prints=True)
-def memo_generation():
+def memo_generation(
+    company_name: str = "Checkfirst",
+    company_context: str = None,
+    deck_extract: str = None,
+    research_data: str = None,
+    benchmark_data: str = None,
+):
     """
     Main flow that orchestrates the 3-step text generation process.
     Each step calls OpenRouter API and may use outputs from previous steps.
+
+    Args:
+        company_name: Name of the company being analyzed
+        company_context: Additional context about the company (optional)
+        deck_extract: Extracted content from company deck (optional)
+        research_data: Deep research output (optional)
+        benchmark_data: Benchmark analysis data (optional)
     """
+    # Use provided data or fall back to defaults
+    _context = company_context if company_context else context
+    _drive_extract = deck_extract if deck_extract else drive_extract
+    _research_output = research_data if research_data else research_output
+    _benchmark = benchmark_data if benchmark_data else benchmark
+
+    print(f"Processing memo for: {company_name}")
+
     # Execute tasks in sequence, passing data between them
     draft_output = draft()
     benchmark_light_output = benchmark_light(draft_output)
     # Note: research_output is currently empty - add a research task if needed
     integrator_output = integrator(
-        draft_output, research_output, benchmark_light_output
+        draft_output, _research_output, benchmark_light_output
     )
     deal_scoring_output = deal_scoring(integrator_output)
     quality_check_output = quality_check(
         deal_scoring_output,
         integrator_output,
-        research_output,
-        drive_extract,
-        context,
+        _research_output,
+        _drive_extract,
+        _context,
     )
     final_output = formatting(quality_check_output)
 
