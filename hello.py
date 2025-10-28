@@ -591,9 +591,17 @@ def generate_text(
     Returns:
         Generated text from the model
     """
+    # Get API key from environment variable
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        raise ValueError("OPENROUTER_API_KEY environment variable is not set")
+
+    # Remove 'Bearer ' prefix if present and clean quotes
+    # api_key = api_key.replace("Bearer ", "").strip().strip('"')
+
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
-        api_key="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",
+        api_key=api_key,
     )
 
     messages = []
