@@ -1,5 +1,5 @@
 x-common-env: &common-env
-  OPENROUTER_API_KEY: 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
+  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
   PREFECT_API_URL: http://34.163.142.11:4200/api
 
 services:
