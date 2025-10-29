@@ -782,10 +782,12 @@ def resume_pipedream(resume_url: str, final_text: str) -> None:
             resume_url,
             json={"final_memo": final_text},
             headers={"Content-Type": "application/json"},
-            timeout=30
+            timeout=30,
         )
         response.raise_for_status()
-        print(f"Successfully resumed Pipedream workflow. Status: {response.status_code}")
+        print(
+            f"Successfully resumed Pipedream workflow. Status: {response.status_code}"
+        )
     except requests.exceptions.RequestException as e:
         print(f"Error resuming Pipedream workflow: {e}")
         raise
@@ -793,7 +795,6 @@ def resume_pipedream(resume_url: str, final_text: str) -> None:
 
 @flow(name="Memo Generation Flow", log_prints=True)
 def memo_generation(
-    company_name: str = "Checkfirst",
     company_context: Optional[str] = None,
     deck_extract: Optional[str] = None,
     research_data: Optional[str] = None,
@@ -805,7 +806,6 @@ def memo_generation(
     Each step calls OpenRouter API and may use outputs from previous steps.
 
     Args:
-        company_name: Name of the company being analyzed
         company_context: Additional context about the company (optional)
         deck_extract: Extracted content from company deck (optional)
         research_data: Deep research output (optional)
@@ -817,8 +817,6 @@ def memo_generation(
     _drive_extract = deck_extract if deck_extract else drive_extract
     _research_output = research_data if research_data else research_output
     _benchmark = benchmark_data if benchmark_data else benchmark
-
-    print(f"Processing memo for: {company_name}")
 
     # Execute tasks in sequence, passing data between them
     draft_output = draft()
