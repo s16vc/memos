@@ -4,6 +4,7 @@ from prefect import flow, task
 from openai import OpenAI
 from dotenv import load_dotenv
 from prompts import SYSTEM_PROMPTS, MODEL_CONFIG
+import requests
 
 # Load environment variables from .env file
 load_dotenv()
@@ -762,6 +763,34 @@ This is the memo you have to format:
     return result
 
 
+@task(name="Resume Pipedream Workflow", retries=3, retry_delay_seconds=10)
+def resume_pipedream(resume_url: str, final_text: str) -> None:
+    """
+    Send the final generated text to the Pipedream resume URL to continue the workflow.
+
+    Args:
+        resume_url: The Pipedream workflow resume URL
+        final_text: The final generated memo text to send back
+    """
+    if not resume_url:
+        print("No resume_url provided, skipping Pipedream workflow resume")
+        return
+
+    try:
+        print(f"Resuming Pipedream workflow at: {resume_url}")
+        response = requests.post(
+            resume_url,
+            json={"final_memo": final_text},
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        response.raise_for_status()
+        print(f"Successfully resumed Pipedream workflow. Status: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error resuming Pipedream workflow: {e}")
+        raise
+
+
 @flow(name="Memo Generation Flow", log_prints=True)
 def memo_generation(
     company_name: str = "Checkfirst",
@@ -769,6 +798,7 @@ def memo_generation(
     deck_extract: Optional[str] = None,
     research_data: Optional[str] = None,
     benchmark_data: Optional[str] = None,
+    resume_url: Optional[str] = None,
 ):
     """
     Main flow that orchestrates the 3-step text generation process.
@@ -780,6 +810,7 @@ def memo_generation(
         deck_extract: Extracted content from company deck (optional)
         research_data: Deep research output (optional)
         benchmark_data: Benchmark analysis data (optional)
+        resume_url: Pipedream workflow resume URL (optional)
     """
     # Use provided data or fall back to defaults
     _context = company_context if company_context else context
@@ -810,6 +841,10 @@ def memo_generation(
     print("\n" + "=" * 80)
     print("FINAL GENERATED TEXT")
     print("=" * 80)
+
+    # Resume Pipedream workflow if resume_url is provided
+    if resume_url:
+        resume_pipedream(resume_url, final_output)
 
     return final_output
 
