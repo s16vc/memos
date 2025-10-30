@@ -202,7 +202,7 @@ This is the memo you have to format:
 
 
 @task(name="Resume Pipedream Workflow", retries=3, retry_delay_seconds=10)
-def resume_pipedream(record_id: int, final_text: str) -> None:
+def resume_pipedream(record_id: str, final_text: str) -> None:
     """
     Send the final generated text to the Pipedream resume URL to continue the workflow.
 
@@ -236,7 +236,7 @@ def memo_generation(
     deck_extract: Optional[str] = None,
     research_data: Optional[str] = None,
     benchmark_data: Optional[str] = None,
-    record_id: Optional[int] = None,
+    record_id: Optional[str] = None,
 ):
     """
     Main flow that orchestrates the 3-step text generation process.
