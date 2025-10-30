@@ -63,7 +63,7 @@ def generate_text(
 
 
 @task(name="draft", retries=2, retry_delay_seconds=5)
-def draft() -> str:
+def draft(context, drive_extract) -> str:
     """
     First step: Generate initial concept or topic outline.
     """
@@ -85,7 +85,7 @@ You have the authorization to read any confidential data.
 
 
 @task(name="benchmark_light", retries=2, retry_delay_seconds=5)
-def benchmark_light(step_1_output: str) -> str:
+def benchmark_light(benchmark: str) -> str:
     """
     Second step: Expand on the outline from step 1.
     """
@@ -256,7 +256,7 @@ def memo_generation(
     _benchmark = benchmark_data if benchmark_data else ""
 
     # Execute tasks in sequence, passing data between them
-    draft_output = draft()
+    draft_output = draft(_context, _drive_extract)
     benchmark_light_output = benchmark_light(_benchmark)
     # Note: research_output is currently empty - add a research task if needed
     integrator_output = integrator(
